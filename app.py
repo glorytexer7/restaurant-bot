@@ -70,7 +70,7 @@ async function sendQuestion() {
 
   chat.innerHTML += `<div class='message'>👤 ${q}</div>`;
 
-  const res = await fetch("/ask", {
+  const res = await fetch("https://restaurant-bot-jj3i.onrender.com/ask", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({question: q})
@@ -109,4 +109,5 @@ def ask():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 

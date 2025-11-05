@@ -27,9 +27,9 @@ h2 {
     display: flex;
     flex-direction: column;
     height: 550px;
-    border-radius: 12px;
+    border-radius: 15px;
     background: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
     overflow: hidden;
 }
 .chat-box {
@@ -45,30 +45,35 @@ h2 {
 }
 input {
     flex: 1;
-    padding: 12px;
+    padding: 14px;
     border: none;
     outline: none;
     font-size: 14px;
+    border-radius: 0;
 }
 button {
-    padding: 12px 18px;
+    padding: 14px 20px;
     border: none;
     background-color: #28a745;
     color: white;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.2s;
+    font-weight: bold;
 }
 button:hover {
     background-color: #218838;
+    transform: scale(1.05);
 }
 .message {
     margin: 8px 0;
-    padding: 10px 14px;
-    border-radius: 20px;
+    padding: 12px 16px;
+    border-radius: 25px;
     max-width: 75%;
     word-wrap: break-word;
     font-size: 14px;
     clear: both;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: background 0.3s;
 }
 .user-msg {
     background-color: #d1e7dd;
@@ -82,15 +87,18 @@ button:hover {
 }
 .menu-item {
     background-color: #fff3cd;
-    padding: 8px 12px;
-    margin: 5px 0;
-    border-radius: 12px;
+    padding: 10px 14px;
+    margin: 6px 0;
+    border-radius: 15px;
     text-align: right;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    font-weight: bold;
 }
 .menu-item:hover {
     background-color: #ffeeba;
+    transform: scale(1.02);
 }
 </style>
 </head>
@@ -131,10 +139,7 @@ function showMenu() {
 }
 
 function sendMenuSelection(text) {
-    // پیام از طرف کاربر
     addMessage(text, "user-msg");
-
-    // ارسال به ربات
     fetch("/ask", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -143,14 +148,12 @@ function sendMenuSelection(text) {
     .then(res => res.json())
     .then(data => addMessage(data.answer, "bot-msg"))
     .catch(err => addMessage("⚠️ خطا: " + err.message, "bot-msg"));
-
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 async function sendQuestion() {
     const q = document.getElementById("question").value.trim();
     if (!q) return;
-
     addMessage(q, "user-msg");
     document.getElementById("question").value = "";
 
@@ -196,7 +199,6 @@ def ask():
     data = request.get_json()
     question = data.get("question", "").lower()
 
-    # پاسخ‌های هوشمند
     if "سلام" in question or "خوش آمد" in question:
         answer = "سلام! خوش اومدی 😊 می‌خوای منو رو ببینی یا سفارش بدی؟"
     elif "ساعت کاری" in question or "زمان باز" in question:

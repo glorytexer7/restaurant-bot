@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # اضافه برای رفع مشکل Cross-Origin
 
 app = Flask(__name__)
+CORS(app)  # فعال کردن CORS برای همه مسیرها
 
 @app.route('/')
 def home():

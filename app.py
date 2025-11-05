@@ -26,7 +26,7 @@ h2 {
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    height: 500px;
+    height: 550px;
     border-radius: 12px;
     background: #fff;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -77,6 +77,18 @@ button:hover {
     background-color: #e2e3e5;
     align-self: flex-end;
 }
+.menu-item {
+    background-color: #fff3cd;
+    padding: 8px 12px;
+    margin: 5px 0;
+    border-radius: 12px;
+    text-align: right;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+.menu-item:hover {
+    background-color: #ffeeba;
+}
 </style>
 </head>
 <body>
@@ -93,6 +105,27 @@ button:hover {
 
 <script>
 const chatBox = document.getElementById("chat");
+
+// لیست منو
+const menu = [
+    {name: "🍕 پیتزا", desc: "پیتزا شامل پپرونی، سبزیجات، مخصوص در اندازه کوچک، متوسط و بزرگ."},
+    {name: "🍔 برگر", desc: "برگر کلاسیک، چیزبرگر و دوبل با نان تازه و گوشت خوشمزه."},
+    {name: "🍝 پاستا", desc: "پاستا آلفردو و بولونز با سس مخصوص رستوران."},
+    {name: "🥗 سالاد", desc: "سالاد تازه با سبزیجات متنوع و سس مخصوص."},
+    {name: "🥤 نوشیدنی‌ها", desc: "انواع نوشابه، آبمیوه و شیک‌های خوشمزه."}
+];
+
+function showMenu() {
+    addMessage("📋 منوی ما:", "bot-msg");
+    menu.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "menu-item bot-msg";
+        div.textContent = item.name;
+        div.onclick = () => addMessage(item.desc, "bot-msg");
+        chatBox.appendChild(div);
+    });
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
 
 async function sendQuestion() {
     const q = document.getElementById("question").value.trim();
@@ -111,7 +144,11 @@ async function sendQuestion() {
         if (!res.ok) throw new Error("خطا در دریافت پاسخ");
 
         const data = await res.json();
-        addMessage(data.answer, "bot-msg");
+        if(data.answer === "SHOW_MENU"){
+            showMenu();
+        } else {
+            addMessage(data.answer, "bot-msg");
+        }
     } catch (err) {
         addMessage("⚠️ خطا: " + err.message, "bot-msg");
     }
@@ -122,7 +159,7 @@ function addMessage(text, cls) {
     msg.className = "message " + cls;
     msg.textContent = text;
     chatBox.appendChild(msg);
-    chatBox.scrollTop = chatBox.scrollHeight; // اسکرول خودکار به پایین
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 </script>
 
@@ -139,18 +176,14 @@ def ask():
     data = request.get_json()
     question = data.get("question", "").lower()
 
-    # پاسخ‌های هوشمند و دسته‌بندی شده
+    # پاسخ‌های هوشمند
     if "سلام" in question or "خوش آمد" in question:
         answer = "سلام! خوش اومدی 😊 می‌خوای منو رو ببینی یا سفارش بدی؟"
     elif "ساعت کاری" in question or "زمان باز" in question:
         answer = "ما هر روز از ۱۲ ظهر تا ۱۲ شب باز هستیم."
     elif "منو" in question or "غذا" in question:
-        answer = ("منوی ما شامل:\n"
-                  "🍕 پیتزا: پپرونی، سبزیجات، مخصوص\n"
-                  "🍔 برگر: کلاسیک، چیزبرگر، دوبل\n"
-                  "🍝 پاستا: آلفردو، بولونز\n"
-                  "🥗 سالاد و نوشیدنی‌ها\n"
-                  "می‌خوای عکس یکی از غذاها رو ببینی یا سفارش بدی؟")
+        # دستور برای نمایش منوی جذاب
+        answer = "SHOW_MENU"
     elif "آدرس" in question or "کجاست" in question:
         answer = "ما در خیابان انقلاب، پلاک ۲۲ قرار داریم."
     elif "سفارش" in question or "چطور سفارش بدم" in question:

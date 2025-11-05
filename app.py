@@ -62,20 +62,23 @@ button:hover {
     background-color: #218838;
 }
 .message {
-    margin: 6px 0;
+    margin: 8px 0;
     padding: 10px 14px;
     border-radius: 20px;
     max-width: 75%;
     word-wrap: break-word;
     font-size: 14px;
+    clear: both;
 }
 .user-msg {
     background-color: #d1e7dd;
     align-self: flex-start;
+    float: left;
 }
 .bot-msg {
     background-color: #e2e3e5;
     align-self: flex-end;
+    float: right;
 }
 .menu-item {
     background-color: #fff3cd;
@@ -121,9 +124,26 @@ function showMenu() {
         const div = document.createElement("div");
         div.className = "menu-item bot-msg";
         div.textContent = item.name;
-        div.onclick = () => addMessage(item.desc, "bot-msg");
+        div.onclick = () => sendMenuSelection(item.name);
         chatBox.appendChild(div);
     });
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function sendMenuSelection(text) {
+    // پیام از طرف کاربر
+    addMessage(text, "user-msg");
+
+    // ارسال به ربات
+    fetch("/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({question: text})
+    })
+    .then(res => res.json())
+    .then(data => addMessage(data.answer, "bot-msg"))
+    .catch(err => addMessage("⚠️ خطا: " + err.message, "bot-msg"));
+
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
@@ -182,16 +202,25 @@ def ask():
     elif "ساعت کاری" in question or "زمان باز" in question:
         answer = "ما هر روز از ۱۲ ظهر تا ۱۲ شب باز هستیم."
     elif "منو" in question or "غذا" in question:
-        # دستور برای نمایش منوی جذاب
         answer = "SHOW_MENU"
     elif "آدرس" in question or "کجاست" in question:
         answer = "ما در خیابان انقلاب، پلاک ۲۲ قرار داریم."
     elif "سفارش" in question or "چطور سفارش بدم" in question:
         answer = "می‌تونی از همین ربات سفارش بدی یا با شماره ما تماس بگیری. می‌خوای ثبت کنم برات؟"
+    elif "🍕 پیتزا" in question or "پیتزا" in question:
+        answer = "پیتزا شامل پپرونی، سبزیجات، مخصوص در اندازه کوچک، متوسط و بزرگ."
+    elif "🍔 برگر" in question or "برگر" in question:
+        answer = "برگر کلاسیک، چیزبرگر و دوبل با نان تازه و گوشت خوشمزه."
+    elif "🍝 پاستا" in question or "پاستا" in question:
+        answer = "پاستا آلفردو و بولونز با سس مخصوص رستوران."
+    elif "🥗 سالاد" in question or "سالاد" in question:
+        answer = "سالاد تازه با سبزیجات متنوع و سس مخصوص."
+    elif "🥤 نوشیدنی" in question or "نوشیدنی‌ها" in question:
+        answer = "انواع نوشابه، آبمیوه و شیک‌های خوشمزه."
     else:
         answer = "متوجه نشدم 😅 لطفاً کمی واضح‌تر بپرس یا از منو کمک بگیر."
 
     return jsonify({"answer": answer})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)

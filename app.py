@@ -76,6 +76,9 @@ button:hover {
     transform: scale(1.05);
 }
 .message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin: 8px 0;
     padding: 12px 16px;
     border-radius: 25px;
@@ -90,11 +93,13 @@ button:hover {
     background-color: #d1e7dd;
     align-self: flex-start;
     float: left;
+    justify-content: flex-start;
 }
 .bot-msg {
     background-color: #e2e3e5;
     align-self: flex-end;
     float: right;
+    justify-content: flex-end;
 }
 .menu-item {
     background-color: #fff3cd;
@@ -111,13 +116,16 @@ button:hover {
     background-color: #ffeeba;
     transform: scale(1.02);
 }
+.icon {
+    font-size: 18px;
+}
 </style>
 </head>
 <body>
 
 <div class="header">
     <img src="https://cdn-icons-png.flaticon.com/512/1046/1046784.png" alt="Restaurant Icon">
-    <h2>🍔 ربات سفارش‌گیر رستوران</h2>
+    <h2>ربات سفارش‌گیر رستوران</h2>
 </div>
 
 <div class="chat-container">
@@ -131,7 +139,6 @@ button:hover {
 <script>
 const chatBox = document.getElementById("chat");
 
-// لیست منو
 const menu = [
     {name: "🍕 پیتزا", desc: "پیتزا شامل پپرونی، سبزیجات، مخصوص در اندازه کوچک، متوسط و بزرگ."},
     {name: "🍔 برگر", desc: "برگر کلاسیک، چیزبرگر و دوبل با نان تازه و گوشت خوشمزه."},
@@ -194,7 +201,13 @@ async function sendQuestion() {
 function addMessage(text, cls) {
     const msg = document.createElement("div");
     msg.className = "message " + cls;
-    msg.textContent = text;
+    const icon = document.createElement("span");
+    icon.className = "icon";
+    icon.textContent = cls === "user-msg" ? "👤" : "🤖";
+    msg.appendChild(icon);
+    const content = document.createElement("span");
+    content.textContent = text;
+    msg.appendChild(content);
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
 }

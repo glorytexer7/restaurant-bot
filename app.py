@@ -89,10 +89,10 @@ async function sendQuestion() {
 def home():
     return render_template_string(HTML_PAGE)
 
-@app.route("/ask", methods=["POST"])
+@app.route('/ask', methods=['POST'])
 def ask():
-    user_message = request.json["message"]
-    return jsonify({"reply": f"شما گفتی: {user_message}"})
+    data = request.get_json()
+    question = data.get("question", "").lower()
 
     if "ساعت کاری" in question:
         answer = "ساعت کاری ما از ۱۲ ظهر تا ۱۲ شب است."

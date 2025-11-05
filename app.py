@@ -117,7 +117,9 @@ button:hover {
     transform: scale(1.02);
 }
 .icon {
-    font-size: 18px;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
 }
 </style>
 </head>
@@ -138,6 +140,10 @@ button:hover {
 
 <script>
 const chatBox = document.getElementById("chat");
+
+// مسیر تصاویر آیکون
+const userIcon = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+const botIcon = "https://cdn-icons-png.flaticon.com/512/4140/4140044.png";
 
 const menu = [
     {name: "🍕 پیتزا", desc: "پیتزا شامل پپرونی، سبزیجات، مخصوص در اندازه کوچک، متوسط و بزرگ."},
@@ -201,13 +207,22 @@ async function sendQuestion() {
 function addMessage(text, cls) {
     const msg = document.createElement("div");
     msg.className = "message " + cls;
-    const icon = document.createElement("span");
-    icon.className = "icon";
-    icon.textContent = cls === "user-msg" ? "👤" : "🤖";
-    msg.appendChild(icon);
+
+    const iconImg = document.createElement("img");
+    iconImg.src = cls === "user-msg" ? userIcon : botIcon;
+    iconImg.className = "icon";
+
     const content = document.createElement("span");
     content.textContent = text;
-    msg.appendChild(content);
+
+    if(cls === "user-msg"){
+        msg.appendChild(iconImg);
+        msg.appendChild(content);
+    } else {
+        msg.appendChild(content);
+        msg.appendChild(iconImg);
+    }
+
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
 }

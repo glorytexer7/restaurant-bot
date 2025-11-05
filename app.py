@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # اضافه برای رفع مشکل Cross-Origin
+from flask_cors import CORS  # فعال کردن CORS
 
 app = Flask(__name__)
-CORS(app)  # فعال کردن CORS برای همه مسیرها
+CORS(app)  # اجازه درخواست از هر دامنه
 
 @app.route('/')
 def home():
@@ -13,7 +13,7 @@ def ask():
     data = request.get_json()
     question = data.get("question", "").lower()
 
-    # پاسخ‌های ساده ربات
+    # پاسخ‌های ربات
     if "ساعت کاری" in question:
         answer = "ساعت کاری ما از ۱۲ ظهر تا ۱۲ شب است."
     elif "منو" in question:

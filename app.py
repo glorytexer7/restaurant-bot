@@ -143,7 +143,7 @@ const chatBox = document.getElementById("chat");
 
 // مسیر تصاویر آیکون
 const userIcon = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-const botIcon = "https://cdn-icons-png.flaticon.com/512/4140/4140044.png";
+const botIcon = "https://cdn-icons-png.flaticon.com/512/4712/4712072.png";
 
 const menu = [
     {name: "🍕 پیتزا", desc: "پیتزا شامل پپرونی، سبزیجات، مخصوص در اندازه کوچک، متوسط و بزرگ."},
@@ -268,3 +268,4 @@ def ask():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+

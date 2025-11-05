@@ -10,70 +10,95 @@ HTML_PAGE = """
 <title>🍽️ ربات سفارش‌گیر رستوران</title>
 <style>
 body {
-  font-family: sans-serif;
-  background-color: #f0f0f0;
+  font-family: 'Tahoma', sans-serif;
+  background-color: #f2f2f2;
   direction: rtl;
   text-align: center;
-  padding: 40px;
+  padding: 30px;
 }
-.chat-box {
-  background: white;
+h2 {
+  color: #333;
+  margin-bottom: 20px;
+}
+.chat-container {
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  height: 500px;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  padding: 20px;
-  max-height: 500px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+.chat-box {
+  flex: 1;
+  padding: 15px;
   overflow-y: auto;
 }
+.input-container {
+  display: flex;
+  border-top: 1px solid #ccc;
+}
 input {
-  width: 80%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-top: 10px;
+  flex: 1;
+  padding: 12px;
+  border: none;
+  outline: none;
+  font-size: 14px;
 }
 button {
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
+  padding: 12px 18px;
   border: none;
-  border-radius: 6px;
+  background-color: #28a745;
+  color: white;
   cursor: pointer;
+  transition: background 0.3s;
 }
 button:hover {
-  background-color: #0056b3;
+  background-color: #218838;
 }
 .message {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #eee;
-  border-radius: 6px;
-  text-align: left;
+  margin: 8px 0;
+  padding: 10px 14px;
+  border-radius: 20px;
+  display: inline-block;
+  max-width: 80%;
   word-wrap: break-word;
+  font-size: 14px;
 }
-.answer {
+.user-msg {
   background-color: #d1e7dd;
+  align-self: flex-start;
+}
+.bot-msg {
+  background-color: #e2e3e5;
+  align-self: flex-end;
 }
 </style>
 </head>
 <body>
 
-<h2>🍔 ربات سفارش‌گیر رستوران آنلاین</h2>
+<h2>🍔 ربات سفارش‌گیر رستوران</h2>
 
-<div class="chat-box" id="chat"></div>
-
-<input type="text" id="question" placeholder="سوال خود را بنویسید...">
-<button onclick="sendQuestion()">ارسال</button>
+<div class="chat-container">
+  <div class="chat-box" id="chat"></div>
+  <div class="input-container">
+    <input type="text" id="question" placeholder="سوال خود را بنویسید...">
+    <button onclick="sendQuestion()">ارسال</button>
+  </div>
+</div>
 
 <script>
+const chatBox = document.getElementById("chat");
+
 async function sendQuestion() {
-  const q = document.getElementById("question").value;
+  const q = document.getElementById("question").value.trim();
   if (!q) return;
 
-  const chat = document.getElementById("chat");
-  chat.innerHTML += `<div class='message'>👤 ${q}</div>`;
+  addMessage(q, "user-msg");
+  document.getElementById("question").value = "";
 
   try {
     const res = await fetch("/ask", {
@@ -85,16 +110,18 @@ async function sendQuestion() {
     if (!res.ok) throw new Error("خطا در دریافت پاسخ");
 
     const data = await res.json();
-    chat.innerHTML += `<div class='message answer'>🤖 ${data.answer}</div>`;
-
-    // اسکرول خودکار به پایین
-    chat.scrollTop = chat.scrollHeight;
-
+    addMessage(data.answer, "bot-msg");
   } catch (err) {
-    chat.innerHTML += `<div class='message answer'>⚠️ خطا: ${err.message}</div>`;
+    addMessage("⚠️ خطا: " + err.message, "bot-msg");
   }
+}
 
-  document.getElementById("question").value = "";
+function addMessage(text, cls) {
+  const msg = document.createElement("div");
+  msg.className = "message " + cls;
+  msg.textContent = text;
+  chatBox.appendChild(msg);
+  chatBox.scrollTop = chatBox.scrollHeight; // اسکرول خودکار
 }
 </script>
 
@@ -111,7 +138,6 @@ def ask():
     data = request.get_json()
     question = data.get("question", "").lower()
 
-    # پاسخ‌های ربات
     if "ساعت کاری" in question:
         answer = "ساعت کاری ما از ۱۲ ظهر تا ۱۲ شب است."
     elif "منو" in question:

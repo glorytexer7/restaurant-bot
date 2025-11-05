@@ -16,9 +16,20 @@ body {
     text-align: center;
     padding: 30px;
 }
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.header img {
+    width: 50px;
+    height: 50px;
+}
 h2 {
     color: #333;
-    margin-bottom: 20px;
+    margin: 0;
 }
 .chat-container {
     width: 100%;
@@ -104,7 +115,10 @@ button:hover {
 </head>
 <body>
 
-<h2>🍔 ربات سفارش‌گیر رستوران</h2>
+<div class="header">
+    <img src="https://cdn-icons-png.flaticon.com/512/1046/1046784.png" alt="Restaurant Icon">
+    <h2>🍔 ربات سفارش‌گیر رستوران</h2>
+</div>
 
 <div class="chat-container">
     <div class="chat-box" id="chat"></div>

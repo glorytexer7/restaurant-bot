@@ -39,6 +39,7 @@ body {
     direction: rtl;
     text-align: center;
     padding: 20px;
+    margin: 0;
 }
 .header {
     display: flex;
@@ -52,11 +53,12 @@ h2 { color: #333; margin: 0; }
 
 .chat-container {
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    height: 60vh;
+    height: 70vh; /* افزایش ارتفاع */
+    min-height: 400px;
     border-radius: 15px;
     background: #fff;
     box-shadow: 0 6px 18px rgba(0,0,0,0.2);
@@ -75,32 +77,33 @@ h2 { color: #333; margin: 0; }
 }
 input {
     flex: 1;
-    padding: 12px;
+    padding: 14px;
     border: none;
     outline: none;
-    font-size: 14px;
+    font-size: 16px; /* بزرگ‌تر برای موبایل */
 }
 button {
-    padding: 12px 18px;
+    padding: 14px 20px;
     border: none;
     background-color: #28a745;
     color: white;
     cursor: pointer;
     font-weight: bold;
     transition: background 0.3s, transform 0.2s;
+    font-size: 16px;
 }
 button:hover { background-color: #218838; transform: scale(1.05); }
 
 .message {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin: 6px 0;
-    padding: 10px 14px;
+    gap: 10px;
+    margin: 8px 0;
+    padding: 14px 18px;
     border-radius: 25px;
     max-width: 75%;
     word-wrap: break-word;
-    font-size: 14px;
+    font-size: 16px; /* بزرگ‌تر */
     clear: both;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
@@ -109,7 +112,7 @@ button:hover { background-color: #218838; transform: scale(1.05); }
 
 .menu-item {
     background-color: #fff3cd;
-    padding: 10px 14px;
+    padding: 12px 16px; /* بزرگ‌تر */
     margin: 6px 0;
     border-radius: 15px;
     text-align: right;
@@ -117,120 +120,28 @@ button:hover { background-color: #218838; transform: scale(1.05); }
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
     font-weight: bold;
+    font-size: 16px;
 }
 .menu-item:hover { background-color: #ffeeba; transform: scale(1.02); }
 
-.icon { width: 24px; height: 24px; flex-shrink: 0; }
+.icon { width: 28px; height: 28px; flex-shrink: 0; } /* بزرگ‌تر برای موبایل */
 
-/* ریسپانسیو موبایل */
-@media (max-width: 600px) {
-    .chat-container { width: 95%; height: 70vh; }
-    input, button { font-size: 16px; padding: 12px; }
-    .message, .menu-item { font-size: 16px; padding: 10px; }
+@media (max-width: 768px) {
+    .chat-container { width: 95%; height: 75vh; }
+    input, button { font-size: 18px; padding: 14px; }
+    .message, .menu-item { font-size: 18px; padding: 12px 16px; }
+    .icon { width: 32px; height: 32px; }
+}
+@media (max-width: 480px) {
+    .chat-container { height: 80vh; }
+    input, button { font-size: 20px; padding: 16px; }
+    .message, .menu-item { font-size: 20px; padding: 14px 18px; }
+    .icon { width: 36px; height: 36px; }
 }
 </style>
 </head>
 <body>
-
-<div class="header">
-    <img src="https://cdn-icons-png.flaticon.com/512/1046/1046784.png" alt="Restaurant Icon">
-    <h2>ربات راهنمای رستوران</h2>
-</div>
-
-<div class="chat-container">
-    <div class="chat-box" id="chat"></div>
-    <div class="input-container">
-        <input type="text" id="question" placeholder="سوال خود را بنویسید...">
-        <button onclick="sendQuestion()">ارسال</button>
-    </div>
-</div>
-
-<script>
-const chatBox = document.getElementById("chat");
-const userIcon = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-const botIcon = "https://cdn-icons-png.flaticon.com/512/6134/6134346.png";
-
-const menu = [
-    {name: "🍕 پیتزا", desc: "پیتزا شامل پپرونی، سبزیجات، مخصوص در اندازه کوچک، متوسط و بزرگ."},
-    {name: "🍔 برگر", desc: "برگر کلاسیک، چیزبرگر و دوبل با نان تازه و گوشت خوشمزه."},
-    {name: "🍝 پاستا", desc: "پاستا آلفردو و بولونز با سس مخصوص رستوران."},
-    {name: "🥗 سالاد", desc: "سالاد تازه با سبزیجات متنوع و سس مخصوص."},
-    {name: "🥤 نوشیدنی‌ها", desc: "انواع نوشابه، آبمیوه و شیک‌های خوشمزه."}
-];
-
-function showMenu() {
-    addMessage("📋 منوی ما:", "bot-msg");
-    menu.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "menu-item bot-msg";
-        div.textContent = item.name;
-        div.onclick = () => sendMenuSelection(item.name);
-        chatBox.appendChild(div);
-    });
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function sendMenuSelection(text) {
-    addMessage(text, "user-msg");
-    fetch("/ask", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({question: text})
-    })
-    .then(res => res.json())
-    .then(data => addMessage(data.answer, "bot-msg"))
-    .catch(err => addMessage("⚠️ خطا: " + err.message, "bot-msg"));
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-async function sendQuestion() {
-    const q = document.getElementById("question").value.trim();
-    if (!q) return;
-    addMessage(q, "user-msg");
-    document.getElementById("question").value = "";
-
-    try {
-        const res = await fetch("/ask", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({question: q})
-        });
-        if (!res.ok) throw new Error("خطا در دریافت پاسخ");
-        const data = await res.json();
-        if(data.answer === "SHOW_MENU"){
-            showMenu();
-        } else {
-            addMessage(data.answer, "bot-msg");
-        }
-    } catch (err) {
-        addMessage("⚠️ خطا: " + err.message, "bot-msg");
-    }
-}
-
-function addMessage(text, cls) {
-    const msg = document.createElement("div");
-    msg.className = "message " + cls;
-
-    const iconImg = document.createElement("img");
-    iconImg.src = cls === "user-msg" ? userIcon : botIcon;
-    iconImg.className = "icon";
-
-    const content = document.createElement("span");
-    content.textContent = text;
-
-    if(cls === "user-msg"){
-        msg.appendChild(iconImg);
-        msg.appendChild(content);
-    } else {
-        msg.appendChild(content);
-        msg.appendChild(iconImg);
-    }
-
-    chatBox.appendChild(msg);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-</script>
-
+...
 </body>
 </html>
 """
@@ -248,3 +159,4 @@ def ask():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+

@@ -11,6 +11,7 @@ def ask():
     data = request.get_json()
     question = data.get("question", "").lower()
 
+    # پاسخ‌های ساده ربات
     if "ساعت کاری" in question:
         answer = "ساعت کاری ما از ۱۲ ظهر تا ۱۲ شب است."
     elif "منو" in question:
